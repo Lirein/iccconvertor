@@ -224,7 +224,7 @@ begin
   if FileExistsUTF8(aICC) then
   begin
     {$IFDEF WINDOWS}
-    if not RunCommand(ExtractFileDir(Application.ExeName)+DirectorySeparator+'convert.ext', [aSource, '-profile', aICC, '-strip', aDestination], aOutput, [poWaitOnExit], swoNone) then exit;
+    if not RunCommand(ExtractFileDir(Application.ExeName)+DirectorySeparator+'convert.exe', [aSource, '-profile', aICC, '-strip', aDestination], aOutput, [poWaitOnExit], swoHIDE) then exit;
     {$ELSE}
     if not RunCommand('/usr/bin/convert', [aSource, '-profile', aICC, '-strip', aDestination], aOutput, [poWaitOnExit], swoNone) then exit;
     {$ENDIF}

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Compiler Value="/usr/bin/fpc" Date="1594078105"/>
-  <Params Value=" -MObjFPC -Scghi -Cg -O1 -g -gl -l -vewnhibq -Fi/home/lirein/Документы/iccconvertor/lib/x86_64-linux -Fu/home/lirein/.lazarus/lib/units/x86_64-linux/gtk2 -Fu/usr/share/lazarus/2.0.12/lcl/units/x86_64-linux -Fu/usr/share/lazarus/2.0.12/components/lazutils/lib/x86_64-linux -Fu/usr/share/lazarus/2.0.12/packager/units/x86_64-linux -Fu/home/lirein/Документы/iccconvertor/ -FU/home/lirein/Документы/iccconvertor/lib/x86_64-linux/ -FE/home/lirein/Документы/iccconvertor/ -o/home/lirein/Документы/iccconvertor/iccconvertor -dLCL -dLCLgtk2 iccconvertor.lpr"/>
+  <Params Value=" -Tlinux -Px86_64 -MObjFPC -Scghi -CX -Cg -Os2 -Xs -XX -l -vewnhibq -Fi/home/lirein/Документы/iccconvertor/lib/x86_64-linux -Fu/home/lirein/.lazarus/lib/units/x86_64-linux/gtk2 -Fu/usr/share/lazarus/2.0.12/lcl/units/x86_64-linux -Fu/usr/share/lazarus/2.0.12/components/lazutils/lib/x86_64-linux -Fu/usr/share/lazarus/2.0.12/packager/units/x86_64-linux -Fu/home/lirein/Документы/iccconvertor/ -FU/home/lirein/Документы/iccconvertor/lib/x86_64-linux/ -FE/home/lirein/Документы/iccconvertor/ -o/home/lirein/Документы/iccconvertor/iccconvertor -dLCL -dLCLgtk2 iccconvertor.lpr"/>
 </CONFIG>
