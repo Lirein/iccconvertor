@@ -1,0 +1,269 @@
+object MainForm: TMainForm
+  Left = 376
+  Height = 589
+  Top = 275
+  Width = 1147
+  Caption = 'ICC Profile convertor'
+  ClientHeight = 589
+  ClientWidth = 1147
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '2.0.12.0'
+  object SourceDirectoryEdit: TEdit
+    AnchorSideLeft.Control = SourceDirectoryLabel
+    AnchorSideTop.Control = SourceDirectoryLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = SourceDirectoryButton
+    Left = 5
+    Height = 27
+    Top = 24
+    Width = 1057
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 5
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object SourceDirectoryButton: TButton
+    AnchorSideTop.Control = SourceDirectoryEdit
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = SourceDirectoryEdit
+    AnchorSideBottom.Side = asrBottom
+    Left = 1062
+    Height = 27
+    Top = 24
+    Width = 80
+    Anchors = [akTop, akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 5
+    Caption = 'Browse ...'
+    Constraints.MinWidth = 80
+    OnClick = SourceDirectoryButtonClick
+    TabOrder = 2
+  end
+  object PaperTypeCombo: TComboBox
+    AnchorSideLeft.Control = PaperTypeLabel
+    AnchorSideTop.Control = PaperTypeLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    Left = 579
+    Height = 29
+    Top = 75
+    Width = 563
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    ItemHeight = 0
+    OnChange = PaperTypeComboChange
+    Style = csDropDownList
+    TabOrder = 3
+  end
+  object ProcessButton: TButton
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 1062
+    Height = 30
+    Top = 554
+    Width = 80
+    Anchors = [akRight, akBottom]
+    AutoSize = True
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    Caption = 'Process'
+    Constraints.MinWidth = 80
+    Enabled = False
+    OnClick = ProcessButtonClick
+    TabOrder = 4
+  end
+  object PhotoList: TListBox
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = PhotoCenterCombo
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ListSeparatorPanel
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = ProcessButton
+    Left = 5
+    Height = 440
+    Top = 109
+    Width = 282
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Bottom = 5
+    ItemHeight = 0
+    OnSelectionChange = PhotoListSelectionChange
+    ScrollWidth = 280
+    TabOrder = 5
+    TopIndex = -1
+  end
+  object PreviewPanel: TPanel
+    AnchorSideLeft.Control = PhotoList
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = PhotoList
+    AnchorSideRight.Control = Owner
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = PhotoList
+    AnchorSideBottom.Side = asrBottom
+    Left = 292
+    Height = 440
+    Top = 109
+    Width = 850
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Right = 5
+    ClientHeight = 440
+    ClientWidth = 850
+    TabOrder = 6
+    object OriginalImage: TImage
+      AnchorSideLeft.Control = PreviewPanel
+      AnchorSideTop.Control = PreviewPanel
+      AnchorSideRight.Control = ImageSeparatorPanel
+      AnchorSideBottom.Control = PreviewPanel
+      AnchorSideBottom.Side = asrBottom
+      Left = 1
+      Height = 438
+      Top = 1
+      Width = 422
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Right = 2
+      Proportional = True
+      Stretch = True
+      StretchOutEnabled = False
+    end
+    object ConvertedImage: TImage
+      AnchorSideLeft.Control = ImageSeparatorPanel
+      AnchorSideTop.Control = PreviewPanel
+      AnchorSideRight.Control = PreviewPanel
+      AnchorSideRight.Side = asrBottom
+      AnchorSideBottom.Control = PreviewPanel
+      AnchorSideBottom.Side = asrBottom
+      Left = 427
+      Height = 438
+      Top = 1
+      Width = 422
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      BorderSpacing.Left = 2
+      Proportional = True
+      Stretch = True
+      StretchOutEnabled = False
+    end
+    object ImageSeparatorPanel: TPanel
+      AnchorSideLeft.Control = PreviewPanel
+      AnchorSideLeft.Side = asrCenter
+      AnchorSideTop.Control = OriginalImage
+      AnchorSideBottom.Control = OriginalImage
+      AnchorSideBottom.Side = asrBottom
+      Left = 425
+      Height = 438
+      Top = 1
+      Width = 1
+      Anchors = [akTop, akLeft, akBottom]
+      BevelOuter = bvNone
+      TabOrder = 0
+    end
+  end
+  object SourceDirectoryLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = Owner
+    Left = 5
+    Height = 14
+    Top = 5
+    Width = 241
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    Caption = 'Please select folder with source Photos::'
+    ParentColor = False
+  end
+  object PhotoCenterLabel: TLabel
+    AnchorSideLeft.Control = Owner
+    AnchorSideTop.Control = SourceDirectoryEdit
+    AnchorSideTop.Side = asrBottom
+    Left = 5
+    Height = 14
+    Top = 56
+    Width = 114
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    Caption = 'Select photocenter'
+    ParentColor = False
+  end
+  object PaperTypeLabel: TLabel
+    AnchorSideLeft.Control = ComboSeparatorPanel
+    AnchorSideLeft.Side = asrBottom
+    AnchorSideTop.Control = PhotoCenterLabel
+    Left = 579
+    Height = 14
+    Top = 56
+    Width = 104
+    BorderSpacing.Left = 5
+    Caption = 'Select paper type'
+    ParentColor = False
+  end
+  object ComboSeparatorPanel: TPanel
+    AnchorSideLeft.Control = Owner
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Control = PhotoCenterCombo
+    AnchorSideBottom.Control = PhotoCenterCombo
+    AnchorSideBottom.Side = asrBottom
+    Left = 573
+    Height = 29
+    Top = 75
+    Width = 1
+    Anchors = [akTop, akLeft, akBottom]
+    BevelOuter = bvNone
+    TabOrder = 7
+  end
+  object ListSeparatorPanel: TPanel
+    AnchorSideLeft.Control = PhotoCenterCombo
+    AnchorSideLeft.Side = asrCenter
+    AnchorSideTop.Control = PhotoCenterCombo
+    AnchorSideBottom.Control = PhotoCenterCombo
+    AnchorSideBottom.Side = asrBottom
+    Left = 286
+    Height = 29
+    Top = 75
+    Width = 1
+    Anchors = [akTop, akLeft, akBottom]
+    BevelOuter = bvNone
+    TabOrder = 8
+  end
+  object ProgressBar: TProgressBar
+    AnchorSideLeft.Control = Owner
+    AnchorSideRight.Control = ProcessButton
+    AnchorSideBottom.Control = ProcessButton
+    AnchorSideBottom.Side = asrCenter
+    Left = 5
+    Height = 20
+    Top = 559
+    Width = 1052
+    Anchors = [akLeft, akRight, akBottom]
+    BorderSpacing.Left = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 5
+    TabOrder = 9
+  end
+  object PhotoCenterCombo: TComboBox
+    AnchorSideLeft.Control = PhotoCenterLabel
+    AnchorSideTop.Control = PhotoCenterLabel
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = ComboSeparatorPanel
+    Left = 5
+    Height = 29
+    Top = 75
+    Width = 563
+    Anchors = [akTop, akLeft, akRight]
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    ItemHeight = 0
+    OnChange = PhotoCenterComboChange
+    Style = csDropDownList
+    TabOrder = 0
+  end
+  object DirectoryDialog: TSelectDirectoryDialog
+    Title = 'Please select directory'
+    Left = 392
+  end
+end
