@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
-  ComCtrls, LazFileUtils, IniFiles, process;
+  ComCtrls, PairSplitter, LazFileUtils, IniFiles, process, LCLProc;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    PaintBox: TPaintBox;
     ProgressBar: TProgressBar;
     DirectoryDialog: TSelectDirectoryDialog;
     SourceDirectoryButton: TButton;
@@ -20,8 +21,6 @@ type
     PhotoCenterCombo: TComboBox;
     PaperTypeCombo: TComboBox;
     SourceDirectoryEdit: TEdit;
-    OriginalImage: TImage;
-    ConvertedImage: TImage;
     SourceDirectoryLabel: TLabel;
     PhotoCenterLabel: TLabel;
     PaperTypeLabel: TLabel;
@@ -29,16 +28,24 @@ type
     PreviewPanel: TPanel;
     ComboSeparatorPanel: TPanel;
     ListSeparatorPanel: TPanel;
-    ImageSeparatorPanel: TPanel;
+    Splitter1: TSplitter;
+    procedure ConvertedImageClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure OriginalImageClick(Sender: TObject);
+    procedure PaintBoxPaint(Sender: TObject);
+    procedure PairSplitter1ChangeBounds(Sender: TObject);
     procedure PaperTypeComboChange(Sender: TObject);
     procedure PhotoCenterComboChange(Sender: TObject);
     procedure PhotoListSelectionChange(Sender: TObject; User: boolean);
     procedure ProcessButtonClick(Sender: TObject);
     procedure SourceDirectoryButtonClick(Sender: TObject);
+    procedure Splitter1Moved(Sender: TObject);
   private
     fPhotoCenters: TStringList;
     fICCProfile: string;
+    fPainting: Boolean;
+    FOriginalImage, FConvertedImage: TPicture;
+    function DstRect(Picture: TPicture): TRect;
     procedure LoadDirectory;
     procedure Init;
     function ProcessImage(aSource: string; aDestination: string): boolean;
@@ -65,10 +72,60 @@ begin
   end;
 end;
 
+procedure TMainForm.Splitter1Moved(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
   Init;
+end;
+
+procedure TMainForm.OriginalImageClick(Sender: TObject);
+begin
+
+end;
+
+procedure TMainForm.PaintBoxPaint(Sender: TObject);
+var
+  R, DR, SR: TRect;
+  C: TCanvas;
+begin
+  // detect loop
+  if FPainting then exit;
+
+  if (FOriginalImage.Graphic=nil) or (FConvertedImage.Graphic=nil) then exit;
+
+    R := DstRect(FOriginalImage);
+
+    C := PaintBox.Canvas;
+
+    C.AntialiasingMode := amOff;
+
+    FPainting:=true;
+    try
+      DR := Rect(R.Left, R.Top, Splitter1.Left, R.Bottom);
+      SR := Rect(0, 0, round(FOriginalImage.Bitmap.Width*double(Splitter1.Left-R.Left)/double(R.Right-R.Left)), FOriginalImage.Bitmap.Height);
+      C.CopyRect(DR, FOriginalImage.Bitmap.Canvas, SR);
+
+      DR := Rect(Splitter1.Left, R.Top, R.Right, R.Bottom);
+      SR := Rect(round(FConvertedImage.Bitmap.Width*double(Splitter1.Left-R.Left)/double(R.Right-R.Left)), 0, FConvertedImage.Bitmap.Width, FConvertedImage.Bitmap.Height);
+      C.CopyRect(DR, FConvertedImage.Bitmap.Canvas, SR);
+    finally
+      FPainting:=false;
+    end;
+end;
+
+procedure TMainForm.ConvertedImageClick(Sender: TObject);
+begin
+
+end;
+
+procedure TMainForm.PairSplitter1ChangeBounds(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm.PaperTypeComboChange(Sender: TObject);
@@ -111,17 +168,32 @@ end;
 
 procedure TMainForm.PhotoListSelectionChange(Sender: TObject; User: boolean);
 var
-  aConverted, aOriginal: String;
+  aConverted, aOriginal, aOutput: String;
+  R: TRect;
 begin
   aOriginal:=SourceDirectoryEdit.Text+DirectorySeparator+PhotoList.Items[PhotoList.ItemIndex];
-  aConverted:=GetTempFileNameUTF8('', 'icc')+'.jpg';
-  ProcessImage(aOriginal, aConverted);
-  OriginalImage.Picture.LoadFromFile(aOriginal);
+  aConverted:=GetTempFileNameUTF8('', 'icco')+'.jpg';
+
+  {$IFDEF WINDOWS}
+  if not RunCommand(ExtractFileDir(Application.ExeName)+DirectorySeparator+'convert.exe', [aOriginal, '-resize', inttostr(PaintBox.Width)+'x'+inttostr(PaintBox.Height), aConverted], aOutput, [poWaitOnExit], swoHIDE) then exit;
+  {$ELSE}
+  if not RunCommand('/usr/bin/convert', [aOriginal, '-resize', inttostr(PaintBox.Width)+'x'+inttostr(PaintBox.Height), aConverted], aOutput, [poWaitOnExit], swoNone) then exit;
+  {$ENDIF}
+  aOriginal:=aConverted;
+  aConverted:=GetTempFileNameUTF8('', 'iccc')+'.jpg';
+
+  if FileExistsUTF8(aOriginal) then
+  begin
+    FOriginalImage.LoadFromFile(aOriginal);
+    ProcessImage(aOriginal, aConverted);
+    DeleteFileUTF8(aOriginal);
+  end;
   if FileExistsUTF8(aConverted) then
   begin
-    ConvertedImage.Picture.LoadFromFile(aConverted);
+    FConvertedImage.LoadFromFile(aConverted);
     DeleteFileUTF8(aConverted);
   end;
+  PaintBox.Invalidate;
 end;
 
 procedure TMainForm.ProcessButtonClick(Sender: TObject);
@@ -186,8 +258,10 @@ var
   i, r: Integer;
   fSection: TStringList;
 begin
+  FOriginalImage := TPicture.Create;
+  FConvertedImage := TPicture.Create;
   PhotoCenterCombo.Clear;
-  aIni := TIniFile.Create(ExtractFileNameWithoutExt(Application.ExeName)+'.ini');
+  aIni := TIniFile.Create(ExtractFilePath(Application.ExeName)+'iccconvertor.ini');
   fPhotoCenters := TStringList.Create;
   aPhotoSection := TStringList.Create;
   aSection := TStringList.Create;
@@ -213,6 +287,43 @@ begin
     PhotoCenterCombo.ItemIndex:=0;
     PhotoCenterCombo.OnChange(PhotoCenterCombo);
   end;
+end;
+
+function TMainForm.DstRect(Picture: TPicture):TRect;
+var
+  PicWidth: Integer;
+  PicHeight: Integer;
+  ImgWidth: Integer;
+  ImgHeight: Integer;
+  w: Integer;
+  h: Integer;
+  ChangeX, ChangeY: Integer;
+  PicInside, PicOutside, PicOutsidePartial: boolean;
+begin
+  PicWidth := Picture.Width;
+  PicHeight := Picture.Height;
+  ImgWidth := PaintBox.ClientWidth;
+  ImgHeight := PaintBox.ClientHeight;
+  if (PicWidth=0) or (PicHeight=0) then Exit(Rect(0, 0, 0, 0));
+
+  PicInside := (PicWidth<ImgWidth) and (PicHeight<ImgHeight);
+  PicOutside := (PicWidth>ImgWidth) and (PicHeight>ImgHeight);
+  PicOutsidePartial := (PicWidth>ImgWidth) or (PicHeight>ImgHeight);
+
+  w:=ImgWidth;
+  h:=(PicHeight*w) div PicWidth;
+  if h>ImgHeight then begin
+    h:=ImgHeight;
+    w:=(PicWidth*h) div PicHeight;
+  end;
+  PicWidth:=w;
+  PicHeight:=h;
+
+  Result := Rect(0, 0, PicWidth, PicHeight);
+
+  ChangeX := (ImgWidth-PicWidth) div 2;
+  ChangeY := (ImgHeight-PicHeight) div 2;
+  OffsetRect(Result, ChangeX, ChangeY);
 end;
 
 function TMainForm.ProcessImage(aSource: string; aDestination: string): boolean;
